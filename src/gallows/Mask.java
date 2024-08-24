@@ -1,27 +1,24 @@
 package gallows;
 
+import java.util.stream.IntStream;
+
 public class Mask {
+
+	private static final char PLACEHOLDER = '*';
 	
-	private String word;
-	private char[] mask;
-	
-	public Mask(String word) {
-		this.word = word;
-		this.mask = word.replaceAll("\\D", "*").toCharArray();
-	}
-	
-	public void showMask() {
-		System.out.println(mask);
+	private final char[] view;
+
+	public Mask(int length) {
+		view = new char[length];
+		IntStream.range(0, length).forEach(i -> view[i] = PLACEHOLDER);
 	}
 
-	public int updateMask(String letter) {
-		int openLettersNumber = 0;
-		for (int i = 0; i < word.length(); i++) {
-			if (word.toUpperCase().charAt(i) == letter.toUpperCase().charAt(0)) {
-				mask[i] = letter.charAt(0);
-				openLettersNumber++;
-			}
-		}
-		return openLettersNumber;
+	public void updateMask(int index, char letter) {
+		view[index] = letter;
+	}
+
+	public char[] getView() {
+		return view;
 	}
 }
+

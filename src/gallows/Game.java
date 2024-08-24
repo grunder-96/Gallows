@@ -1,121 +1,107 @@
 package gallows;
 
-import java.util.ArrayList;
+import gallows.validator.Validator;
+import java.util.Arrays;
 import java.util.List;
 
 public class Game {
 
-	private GameUtils gameUtils = GameUtils.getInstance();
-
-	private Dictionary dictionary;
 	private String word;
 	private Mask mask;
-	private GallowsImage gallows;
+	private GallowsImage gallowsImage;
 	private List<String> enteredLetters;
+	private GameInformer gameInformer;
+	private Reader reader;
+	private Validator validator;
 
 	private int openLettersCounter;
 	private int errorsCounter;
 	private boolean isOver;
 	private boolean isWin;
 
-	private final int MAX_ERRORS = 6;
+	private static final int MAX_ERRORS = 6;
 
-	public void launch() {
-		try {
-			String answer = gameUtils.askLaunchGame();
-			if (answer.equalsIgnoreCase("y")) {
-				initialize();
-			} else if (answer.equalsIgnoreCase("n")) {
-				System.out.println("Завершение программы.");
+	public void play() {
+		while (!isOver) {
+			gameInformer.showSeparatorLine();
+			gallowsImage.drawGallows(errorsCounter);
+			gameInformer.printMessage(Arrays.toString(mask.getView()));
+			gameInformer.showAlreadyEnteredLetters(enteredLetters);
+			gameInformer.askLetter();
+			String input = reader.readLine().toLowerCase();
+
+			if (!validator.validate(input)) {
+				gameInformer.showIncorrectInputMessage();
+				continue;
+			}
+
+			if (enteredLetters.contains(input)) {
+				gameInformer.showAlreadyUseMessage();
+				continue;
+			}
+
+			enteredLetters.add(input);
+
+			if (word.contains(input)) {
+				int index = word.indexOf(input);
+				while (index != -1) {
+					openLettersCounter++;
+					mask.updateMask(index, word.charAt(index));
+					index = word.indexOf(input, index + 1);
+				}
 			} else {
-				gameUtils.showIncorrectValueMessage();
-				launch();
-			}
-		} catch (IndexOutOfBoundsException e) {
-			gameUtils.showEmptyInputMessage();
-			launch();
-		}
-	}
-
-	private void initialize() {
-		dictionary = Dictionary.getInstance();
-		word = dictionary.getRandomWord();
-		mask = new Mask(word);
-		gallows = GallowsImage.getInstance();
-		enteredLetters = new ArrayList<>();
-
-		// Сброс полей состояния игры
-		isOver = false;
-		openLettersCounter = 0;
-		errorsCounter = 0;
-
-		mask.showMask();
-		play();
-	}
-
-	private void play() {
-		try {
-			String letter = gameUtils.askLetter();
-
-			// Вывод сообщения о букве, которая была введена ранее
-			while(enteredLetters.contains(letter)) {
-				gameUtils.showAlreadyUseMessage();
-				letter = gameUtils.askLetter();
-			}
-
-			if (word.contains(letter)) {
-				openLettersCounter += mask.updateMask(letter);
-			}
-
-			if (!word.contains(letter)) {
+				gameInformer.showNotContainInWordMessage();
 				errorsCounter++;
 			}
 
-			enteredLetters.add(letter);
+			updateIsOverState();
+		}
 
-			mask.showMask();
-			showErrorsCounter();
-			showEnteredLetters();
-			gallows.drawGallows(errorsCounter);
-			gameUtils.showSeparatorLine();
+		updateIsWinState();
 
-			isOver = checkIsOver();
-
-			if (isOver) {
-				if (isWin) {
-					gameUtils.showGameWinMessage();
-				} else {
-					gameUtils.showGameLoseMessage(word);
-				}
-				launch();
-			} else {
-				play();
-			}
-		} catch (IndexOutOfBoundsException e) {
-			gameUtils.showEmptyInputMessage();
-			play();
+		if (isWin) {
+			gameInformer.showGameWinMessage();
+		} else {
+			gallowsImage.drawGallows(errorsCounter);
+			gameInformer.showGameLoseMessage(word);
 		}
 	}
 
-	private void showErrorsCounter() {
-		System.out.println("Ошибок: " + errorsCounter);
+	private void updateIsOverState() {
+		if (openLettersCounter >= word.length() || errorsCounter >= MAX_ERRORS) {
+			isOver = true;
+		}
 	}
 
-	private void showEnteredLetters() {
-		System.out.println("Введенные буквы: " + enteredLetters);
+	private void updateIsWinState() {
+		isWin = openLettersCounter == word.length();
 	}
 
-	private boolean checkIsOver() {
-		if (errorsCounter == MAX_ERRORS) {
-			isWin = false;
-			return true;
-		}
+	public void setWord(String word) {
+		this.word = word;
+	}
 
-		if (openLettersCounter == word.length()) {
-			isWin = true;
-			return true;
-		}
+	public void setMask(Mask mask) {
+		this.mask = mask;
+	}
 
-		return false;
+	public void setGallowsImage(GallowsImage gallowsImage) {
+		this.gallowsImage = gallowsImage;
+	}
+
+	public void setEnteredLetters(List<String> enteredLetters) {
+		this.enteredLetters = enteredLetters;
+	}
+
+	public void setGameInformer(GameInformer gameInformer) {
+		this.gameInformer = gameInformer;
+	}
+
+	public void setReader(Reader reader) {
+		this.reader = reader;
+	}
+
+	public void setValidator(Validator validator) {
+		this.validator = validator;
 	}
 }

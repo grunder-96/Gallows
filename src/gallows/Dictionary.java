@@ -14,7 +14,6 @@ import static java.util.stream.Collectors.toList;
 
 public class Dictionary {
 
-	private static final Dictionary INSTANCE = new Dictionary();
 	private static List<String> words;
 
 	static {
@@ -23,19 +22,15 @@ public class Dictionary {
 
 	private Dictionary() {}
 
-	public static Dictionary getInstance() {
-		return INSTANCE;
-	}
-
 	private static void generateDictionary() {
 		Path path = Path.of("resources", "dictionary.txt");
 		if (!Files.exists(path)) {
 			throw new DictionaryNotFoundException("Файл словаря не найден. Завершение программы.");
-
 		}
 		try (Stream<String> lines = Files.lines(path)) {
 			words = lines
-					.map(str -> str.replaceAll("[\\d\\s]", ""))
+					.map(str -> str.replaceAll("[\\d]", ""))
+					.map(String::trim)
 					.filter(s -> s.length() > 5)
 					.collect(toList());
 		} catch (IOException e) {
@@ -43,7 +38,7 @@ public class Dictionary {
         }
 	}
 
-	public String getRandomWord() {
+	public static String getRandomWord() {
 			if (words.isEmpty()) {
 				throw new NoMoreWordsException("Словарь пуст. Завершение программы.");
 			}
