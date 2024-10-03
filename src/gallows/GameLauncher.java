@@ -1,5 +1,6 @@
 package gallows;
 
+import gallows.validator.ExpectedValueValidator;
 import gallows.validator.LetterInputValidator;
 import gallows.validator.Validator;
 import java.util.ArrayList;
@@ -13,6 +14,10 @@ public class GameLauncher {
     private Validator validator;
     private Game game;
 
+    public GameLauncher() {
+        this.reader = new Reader();
+        this.validator = new ExpectedValueValidator(LAUNCHER_RUN_COMMAND, LAUNCHER_QUIT_COMMAND);
+    }
 
     public GameLauncher(Reader reader, Validator validator) {
         this.reader = reader;
@@ -21,18 +26,20 @@ public class GameLauncher {
 
     public void launch() {
         while (true) {
-            System.out.println(String.format("Запустить игру? (%s/%s)", LAUNCHER_RUN_COMMAND, LAUNCHER_QUIT_COMMAND));
+            System.out.printf("Запустить игру? (%s/%s)\n", LAUNCHER_RUN_COMMAND, LAUNCHER_QUIT_COMMAND);
             String s = reader.readLine();
+
             if (validator.validate(s)) {
                 if (s.equalsIgnoreCase(LAUNCHER_QUIT_COMMAND)) {
                     break;
                 }
+
                 Game game = new Game();
                 initializeGame(game);
                 game.play();
-            } else {
-                System.out.println("Некорректный ввод.");
+                continue;
             }
+            System.out.println("Некорректный ввод.");
         }
     }
 
