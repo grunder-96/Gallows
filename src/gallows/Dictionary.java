@@ -25,7 +25,7 @@ public class Dictionary {
 	private static void generateDictionary() {
 		Path path = Path.of("resources", "dictionary.txt");
 		if (!Files.exists(path)) {
-			throw new DictionaryNotFoundException("Файл словаря не найден. Завершение программы.");
+			throw new DictionaryNotFoundException("Dictionary file not found. Program terminated.");
 		}
 		try (Stream<String> lines = Files.lines(path)) {
 			words = lines
@@ -40,7 +40,7 @@ public class Dictionary {
 
 	public static String getRandomWord() {
 			if (words.isEmpty()) {
-				throw new NoMoreWordsException("Словарь пуст. Завершение программы.");
+				throw new NoMoreWordsException("The dictionary is empty. Program terminated.");
 			}
 			int index = new Random().nextInt(words.size());
 			String word = words.get(index);
