@@ -40,7 +40,7 @@ public class GameLauncher {
     }
 
     private Game initializeGame() {
-        String word = Dictionary.getRandomWord();
+        String word = new Dictionary().getRandomWord();
         return new Game(new HiddenWord(word));
     }
 }
