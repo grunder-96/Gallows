@@ -14,16 +14,19 @@ import static java.util.stream.Collectors.toList;
 
 public class Dictionary {
 
-	private static List<String> words;
+	private static final String DEFAULT_RESOURCE_NAME = "dictionary.txt";
+    private List<String> words;
 
-	static {
-		generateDictionary();
+	public Dictionary() {
+		this(DEFAULT_RESOURCE_NAME);
 	}
 
-	private Dictionary() {}
+	public Dictionary(String resourceName) {
+        generateDictionary(resourceName);
+	}
 
-	private static void generateDictionary() {
-		Path path = Path.of("resources", "dictionary.txt");
+	private void generateDictionary(String resourceName) {
+		Path path = Path.of("resources", resourceName);
 		if (!Files.exists(path)) {
 			throw new DictionaryNotFoundException("Dictionary file not found. Program terminated.");
 		}
@@ -38,7 +41,7 @@ public class Dictionary {
         }
 	}
 
-	public static String getRandomWord() {
+	public String getRandomWord() {
 			if (words.isEmpty()) {
 				throw new NoMoreWordsException("The dictionary is empty. Program terminated.");
 			}
