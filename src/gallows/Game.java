@@ -70,10 +70,10 @@ public class Game {
 	 }
 
 	private void showGameResult() {
+		showCurrentGameState();
 		if (getIsWinState()) {
 			gameInformer.showGameWinMessage();
 		} else {
-			gallowsImage.drawGallows(errorsCounter);
 			gameInformer.showGameLoseMessage(hiddenWord.getWord());
 		}
 	}
