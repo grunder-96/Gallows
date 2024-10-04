@@ -10,10 +10,6 @@ public class GameInformer {
 
     }
 
-    public static GameInformer getInstance() {
-        return INSTANCE;
-    }
-
     public void printMessage(String message) {
         System.out.println(message);
     }
@@ -23,7 +19,7 @@ public class GameInformer {
     }
 
     public void showAlreadyEnteredLetters(List<String> letters) {
-        printMessage("Список использовавшихся букв: " + letters);
+        printMessage("Список использовавшихся букв: " + String.join(", ", letters));
     }
 
     public void showIncorrectInputMessage() { printMessage("Некорректный ввод."); }
@@ -38,5 +34,10 @@ public class GameInformer {
 
     public void showSeparatorLine() {
         printMessage("======================================");
+    }
+
+    public static GameInformer getInstance() {
+        return INSTANCE;
+
     }
 }
