@@ -1,9 +1,7 @@
 package gallows;
 
 import gallows.validator.ExpectedValueValidator;
-import gallows.validator.LetterInputValidator;
 import gallows.validator.Validator;
-import java.util.ArrayList;
 
 public class GameLauncher {
 
@@ -12,7 +10,6 @@ public class GameLauncher {
 
     private Reader reader;
     private Validator validator;
-    private Game game;
 
     public GameLauncher() {
         this.reader = new Reader();
@@ -34,8 +31,7 @@ public class GameLauncher {
                     break;
                 }
 
-                Game game = new Game();
-                initializeGame(game);
+                Game game = initializeGame();
                 game.play();
                 continue;
             }
@@ -43,15 +39,8 @@ public class GameLauncher {
         }
     }
 
-    public void initializeGame(Game game) {
+    private Game initializeGame() {
         String word = Dictionary.getRandomWord();
-
-        game.setWord(word);
-        game.setMask(new Mask(word.length()));
-        game.setGallowsImage(GallowsImage.getInstance());
-        game.setEnteredLetters(new ArrayList<>());
-        game.setGameInformer(GameInformer.getInstance());
-        game.setValidator(new LetterInputValidator());
-        game.setReader(reader);
+        return new Game(new HiddenWord(word));
     }
 }
